@@ -9,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import lombok.Getter;
 
@@ -25,7 +24,6 @@ public class TravelLocation extends AuditEntity {
     @Column(name = "LOCATION_ID")
     private Long id;
 
-    @MapsId("id")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TRAVEL_ID", nullable = false)
     private Travel travel;
