@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,6 +32,7 @@ public class User  extends AuditEntity {
 
 
     @Id
+    @UuidGenerator
     @Column(name = "USER_ID")
     private UUID id;
 
@@ -47,12 +49,19 @@ public class User  extends AuditEntity {
     private String nickname;
 
     @NotNull
-    @Column(name = "USER_TYPE", unique = true, nullable = false, length = 20)
+    @Column(name = "USER_STATUS", nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private UserType userType = UserType.INACTIVE;    // FIXME : -> to enum
+    private UserStatus userStatus = UserStatus.INACTIVE;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Travel> travels = new HashSet<>();
 
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updateUserStatus(UserStatus userStatus) {
+        this.userStatus = userStatus;
+    }
 }
