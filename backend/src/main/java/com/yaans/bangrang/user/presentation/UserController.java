@@ -1,15 +1,14 @@
 package com.yaans.bangrang.user.presentation;
 
+import com.yaans.bangrang.common.dto.PageableDTO;
 import com.yaans.bangrang.user.domain.User;
 import com.yaans.bangrang.user.service.UserService;
 import com.yaans.bangrang.user.service.dto.UserCreateRequestDTO;
 import com.yaans.bangrang.user.service.dto.UserListResponseDTO;
 import com.yaans.bangrang.user.service.dto.UserUpdateRequestDTO;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,7 +36,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<UserListResponseDTO> getUserList(Pageable pageable) {
+    public ResponseEntity<UserListResponseDTO> getUserList(@RequestBody PageableDTO pageable) {
         Page<User> userList = userService.getList(pageable);
 
         return ResponseEntity.ok(UserListResponseDTO.builder()

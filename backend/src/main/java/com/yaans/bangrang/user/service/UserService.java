@@ -1,11 +1,12 @@
 package com.yaans.bangrang.user.service;
 
+import com.yaans.bangrang.common.dto.PageableDTO;
 import com.yaans.bangrang.user.domain.User;
+import com.yaans.bangrang.user.exception.DuplicatedNicknameException;
 import com.yaans.bangrang.user.repository.UserRepository;
 import com.yaans.bangrang.user.service.dto.UserCreateRequestDTO;
 import com.yaans.bangrang.user.service.dto.UserUpdateRequestDTO;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,9 +26,9 @@ public class UserService {
         return userRepository.save(dto.toEntity());
     }
 
-    public Page<User> getList(Pageable pageable) {
-        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC));
-        return userRepository.findAll(pageRequest);
+    public Page<User> getList(PageableDTO dto) {
+        PageRequest pageable = PageRequest.of(dto.getPage(), dto.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
+        return userRepository.findAll(pageable);
     }
 
     public User getUser(UUID userId) {
@@ -37,9 +38,13 @@ public class UserService {
 
     @Transactional
     public User update(UUID userId, UserUpdateRequestDTO dto) {
+        if (userRepository.findByNickname(dto.getNickname()).isPresent()) {
+            throw new DuplicatedNicknameException();
+        }
+
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
-            user.updateNickname(dto.getNickname());         // TODO : 이미 존재하는 닉네임(unique)을 입력한 경우 예외처리 필요
-            user.updateUserStatus(dto.getUserStatus());
+        user.updateNickname(dto.getNickname());
+        user.updateUserStatus(dto.getUserStatus());
         return user;
     }
 
